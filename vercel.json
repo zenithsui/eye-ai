@@ -1,0 +1,7 @@
+{
+  "buildCommand": "cp artifacts/eye-ai/package.vercel.json artifacts/eye-ai/package.json && cd artifacts/eye-ai && npm install && npm run build",
+  "outputDirectory": "artifacts/eye-ai/dist/public",
+  "installCommand": "echo skip",
+  "framework": null,
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
