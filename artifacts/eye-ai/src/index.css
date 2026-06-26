@@ -112,6 +112,13 @@ body {
   justify-content: center;
   align-items: center;
   font-family: 'Inter', sans-serif;
+  /* Prevent text size adjustment on orientation change */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Prevent tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
+  /* Prevent overscroll bounce on iOS */
+  overscroll-behavior: none;
 }
 
 #root {
@@ -131,11 +138,17 @@ body {
   background: linear-gradient(160deg, #0a0a0a 0%, #111111 40%, #0d0d0d 100%);
 }
 
+/* Tablet portrait (768px+) */
 @media (min-width: 768px) {
+  #root {
+    max-width: 480px;
+  }
   .app-container {
+    max-width: 480px;
     min-height: unset;
-    height: 850px;
-    border-radius: 40px;
+    height: 90dvh;
+    max-height: 900px;
+    border-radius: 36px;
     box-shadow: 0 40px 100px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.05);
   }
   body {
@@ -143,13 +156,44 @@ body {
   }
 }
 
-/* Tablet / large screen support */
+/* Tablet landscape / small laptop (1024px+) */
 @media (min-width: 1024px) {
   #root {
-    max-width: 430px;
+    max-width: 440px;
+  }
+  .app-container {
+    max-width: 440px;
+    height: 88dvh;
+    max-height: 860px;
+    border-radius: 40px;
   }
   body {
     background: #050505;
+  }
+}
+
+/* Large desktop (1440px+) */
+@media (min-width: 1440px) {
+  #root {
+    max-width: 430px;
+  }
+  .app-container {
+    max-width: 430px;
+    height: 85dvh;
+    max-height: 850px;
+  }
+}
+
+/* Ensure minimum touch target size on all platforms */
+button, [role="button"], input[type="submit"], input[type="button"] {
+  min-height: 36px;
+  cursor: pointer;
+}
+
+/* Safe area support for notched phones */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .app-container {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
