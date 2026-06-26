@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { getSetting, setSetting, getUserName, setUserName, deleteAllConversations, clearHistory } from '../lib/storage';
+import { getSetting, setSetting, getUserName, setUserName, getTavilyKey, setTavilyKey, deleteAllConversations, clearHistory } from '../lib/storage';
 import { showToast } from '../components/Toast';
+import { tavilySearch } from '../lib/ai-providers';
 const eyeLogo = '/eye-logo.jpg';
 
 const BG = 'linear-gradient(160deg, #0a0a0a 0%, #111 50%, #080808 100%)';
@@ -11,9 +12,35 @@ export function SettingsScreen() {
   const { setCurrentScreen, clearMessages, refreshConversations } = useApp();
   const [name, setName] = useState(getUserName() || '');
   const [speed, setSpeed] = useState(getSetting('voice_speed') || '0.95');
+  const [searchKey, setSearchKey] = useState(getTavilyKey() ? '********' : '');
+  const [searchKeyStatus, setSearchKeyStatus] = useState<'idle' | 'ok' | 'err'>('idle');
+  const [testingKey, setTestingKey] = useState(false);
 
   const handleSaveName = () => {
     if (name.trim()) { setUserName(name.trim()); showToast('Name saved!', 'success'); }
+  };
+
+  const handleSaveSearchKey = () => {
+    if (searchKey && searchKey !== '********') {
+      setTavilyKey(searchKey);
+      setSearchKey('********');
+      showToast('Search key saved!', 'success');
+    }
+  };
+
+  const handleTestSearchKey = async () => {
+    setTestingKey(true);
+    setSearchKeyStatus('idle');
+    try {
+      await tavilySearch('test');
+      setSearchKeyStatus('ok');
+      showToast('Search key works!', 'success');
+    } catch {
+      setSearchKeyStatus('err');
+      showToast('Key not working — check and retry', 'error');
+    } finally {
+      setTestingKey(false);
+    }
   };
 
   const handleClearHistory = () => {
@@ -51,10 +78,7 @@ export function SettingsScreen() {
               onBlur={handleSaveName}
               onKeyDown={e => { if (e.key === 'Enter') handleSaveName(); }}
               placeholder="Your Name"
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              spellCheck={false}
+              autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
             />
           </div>
         </div>
@@ -65,12 +89,57 @@ export function SettingsScreen() {
             <div className="w-full">
               <label className="text-xs text-white/40 block mb-2">Voice Speed ({speed}x)</label>
               <input
-                type="range"
-                min="0.5" max="2.0" step="0.1"
-                value={speed}
+                type="range" min="0.5" max="2.0" step="0.1" value={speed}
                 onChange={e => { setSpeed(e.target.value); setSetting('voice_speed', e.target.value); }}
                 className="w-full accent-white/60"
               />
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-section">
+          <div className="settings-label">Search Engine</div>
+          <p className="text-white/25 text-xs px-1 mb-3">Powers real-time web search in Deep Search &amp; Web Search modes</p>
+          <div className="settings-item flex-col items-stretch gap-2 !p-3">
+            <div className="flex justify-between items-center w-full">
+              <div className="flex items-center gap-2 text-white/80 font-medium text-sm">
+                <div className={`w-2 h-2 rounded-full transition-colors ${
+                  searchKeyStatus === 'ok' ? 'bg-green-400' :
+                  searchKeyStatus === 'err' ? 'bg-red-400' :
+                  getTavilyKey() ? 'bg-white/70' : 'bg-white/20'
+                }`} />
+                Search Engine Key
+              </div>
+              <span className="text-xs text-white/30">
+                {searchKeyStatus === 'ok' ? '✓ Working' : searchKeyStatus === 'err' ? '✗ Error' : getTavilyKey() ? '✓ Saved' : 'Not set'}
+              </span>
+            </div>
+            <div className="flex gap-2 w-full">
+              <input
+                type="password"
+                value={searchKey}
+                onChange={e => setSearchKey(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') handleSaveSearchKey(); }}
+                placeholder={getTavilyKey() ? '✓ Key saved' : 'Enter search API key'}
+                className="flex-1 rounded-lg px-3 py-2 text-white text-sm"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.09)' }}
+                autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
+              />
+              <button
+                onClick={handleTestSearchKey}
+                disabled={testingKey || (!getTavilyKey() && !searchKey)}
+                className="text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-30"
+                style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
+              >
+                {testingKey ? '...' : 'Test'}
+              </button>
+              <button
+                onClick={handleSaveSearchKey}
+                className="text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }}
+              >
+                Save
+              </button>
             </div>
           </div>
         </div>
@@ -86,7 +155,7 @@ export function SettingsScreen() {
               <div className="text-white/40 text-xs mt-0.5">Full intelligence enabled</div>
             </div>
             <div className="ml-auto">
-              <div className="w-2.5 h-2.5 rounded-full bg-white/70 shadow-sm shadow-white/30"></div>
+              <div className="w-2.5 h-2.5 rounded-full bg-white/70 shadow-sm shadow-white/30" />
             </div>
           </div>
         </div>
