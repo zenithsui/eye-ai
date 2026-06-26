@@ -6,10 +6,13 @@ let recognition: any = null;
 let isListening = false;
 let currentAudio: HTMLAudioElement | null = null;
 
-// Cross-platform: detect iOS
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-const isAndroid = /Android/.test(navigator.userAgent);
-const isMobile = isIOS || isAndroid;
+// Cross-platform: detect device type (evaluated lazily to avoid SSR issues)
+function getIsIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+}
+function getIsAndroid() {
+  return /Android/.test(navigator.userAgent);
+}
 
 export function startListening(
   onResult: (text: string) => void,
@@ -108,14 +111,14 @@ export async function speakText(text: string, onStateChange: OrbStateUpdater) {
   const elevenKey = getKey('elevenlabs') || (import.meta.env.VITE_ELEVENLABS_KEY || '');
   if (elevenKey) {
     try {
-      const voiceId = getSetting('elevenlabs_voice_id') || 'EXAVITQu4vr4xnSDxMaL';
+      const voiceId = getSetting('elevenlabs_voice_id') || 'EsGA6YZzJKyddqvfyQ26';
       const speed = getSetting('voice_speed');
       const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
         method: 'POST',
         headers: { 'xi-api-key': elevenKey, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text: text.slice(0, 2500), // ElevenLabs char limit safety
-          model_id: 'eleven_multilingual_v2',
+          text: text.slice(0, 2500),
+          model_id: 'eleven_flash_v2_5',
           voice_settings: {
             stability: 0.5,
             similarity_boost: 0.85,
@@ -201,7 +204,7 @@ function speakWithBrowserTTS(text: string, onStateChange: OrbStateUpdater) {
   utterance.onerror = () => onStateChange('idle');
 
   // iOS Safari bug: speechSynthesis stops mid-sentence on long text — chunk it
-  if (isIOS && text.length > 200) {
+  if (getIsIOS() && text.length > 200) {
     const sentences = text.match(/[^.!?]+[.!?]*/g) || [text];
     let idx = 0;
     const speakNext = () => {
@@ -223,7 +226,7 @@ function speakWithBrowserTTS(text: string, onStateChange: OrbStateUpdater) {
   window.speechSynthesis.speak(utterance);
 
   // Android Chrome bug: speechSynthesis pauses after ~15s — keep it alive
-  if (isAndroid) {
+  if (getIsAndroid()) {
     const keepAlive = setInterval(() => {
       if (!window.speechSynthesis.speaking) {
         clearInterval(keepAlive);
