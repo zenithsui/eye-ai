@@ -104,13 +104,12 @@
 }
 
 /* ===== EYE AI GLOBAL STYLES — BLACK/GREY/WHITE BLURRY THEME ===== */
-body {
+html, body {
   margin: 0;
-  min-height: 100dvh;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   background: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   font-family: 'Inter', sans-serif;
   /* Prevent text size adjustment on orientation change */
   -webkit-text-size-adjust: 100%;
@@ -123,65 +122,17 @@ body {
 
 #root {
   width: 100%;
-  max-width: 430px;
-  min-height: 100dvh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
 .app-container {
   width: 100%;
-  max-width: 430px;
-  min-height: 100dvh;
+  height: 100dvh;
   position: relative;
   overflow: hidden;
   background: linear-gradient(160deg, #0a0a0a 0%, #111111 40%, #0d0d0d 100%);
-}
-
-/* Tablet portrait (768px+) */
-@media (min-width: 768px) {
-  #root {
-    max-width: 480px;
-  }
-  .app-container {
-    max-width: 480px;
-    min-height: unset;
-    height: 90dvh;
-    max-height: 900px;
-    border-radius: 36px;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.05);
-  }
-  body {
-    background: #000;
-  }
-}
-
-/* Tablet landscape / small laptop (1024px+) */
-@media (min-width: 1024px) {
-  #root {
-    max-width: 440px;
-  }
-  .app-container {
-    max-width: 440px;
-    height: 88dvh;
-    max-height: 860px;
-    border-radius: 40px;
-  }
-  body {
-    background: #050505;
-  }
-}
-
-/* Large desktop (1440px+) */
-@media (min-width: 1440px) {
-  #root {
-    max-width: 430px;
-  }
-  .app-container {
-    max-width: 430px;
-    height: 85dvh;
-    max-height: 850px;
-  }
 }
 
 /* Ensure minimum touch target size on all platforms */
@@ -606,8 +557,6 @@ button, [role="button"], input[type="submit"], input[type="button"] {
 .modes-sheet {
   position: fixed;
   left: 0; right: 0; bottom: 0;
-  margin: 0 auto;
-  max-width: 430px;
   background: rgba(15,15,15,0.95);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
