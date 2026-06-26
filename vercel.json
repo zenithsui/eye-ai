@@ -1,5 +1,5 @@
 {
-  "installCommand": "pnpm install --no-frozen-lockfile",
+  "installCommand": "corepack enable && pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/eye-ai run build:vercel",
   "outputDirectory": "artifacts/eye-ai/dist/public",
   "framework": null,
