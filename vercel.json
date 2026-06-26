@@ -1,7 +1,17 @@
 {
-  "buildCommand": "cp artifacts/eye-ai/package.vercel.json artifacts/eye-ai/package.json && cd artifacts/eye-ai && npm install && npm run build",
+  "buildCommand": "pnpm install --frozen-lockfile && pnpm --filter @workspace/eye-ai run build:vercel",
   "outputDirectory": "artifacts/eye-ai/dist/public",
-  "installCommand": "echo skip",
+  "installCommand": "pnpm install --frozen-lockfile",
   "framework": null,
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
 }
