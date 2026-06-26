@@ -10,14 +10,16 @@ import { ToastContainer } from './components/Toast';
 function AppContent() {
   const { currentScreen } = useApp();
   return (
-    <div className="app-container">
-      {currentScreen === 'splash' && <SplashScreen />}
-      {currentScreen === 'home' && <HomeScreen />}
-      {currentScreen === 'voice' && <VoiceScreen />}
-      {currentScreen === 'chat' && <ChatScreen />}
-      {currentScreen === 'settings' && <SettingsScreen />}
-      {currentScreen === 'history' && <HistoryScreen />}
-      <ToastContainer />
+    <div className="desktop-frame">
+      <div className="app-container">
+        {currentScreen === 'splash' && <SplashScreen />}
+        {currentScreen === 'home' && <HomeScreen />}
+        {currentScreen === 'voice' && <VoiceScreen />}
+        {currentScreen === 'chat' && <ChatScreen />}
+        {currentScreen === 'settings' && <SettingsScreen />}
+        {currentScreen === 'history' && <HistoryScreen />}
+        <ToastContainer />
+      </div>
     </div>
   );
 }
