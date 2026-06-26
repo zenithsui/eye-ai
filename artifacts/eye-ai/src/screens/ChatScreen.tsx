@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, MoreVertical, Mic, Send, History, Zap } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { callAIWithFallback, deepSearch } from '../lib/ai-providers';
+import { callAIWithFallback, deepSearch, webSearch } from '../lib/ai-providers';
 import { startListening, stopListening, getIsListening } from '../lib/voice';
 import { showToast } from '../components/Toast';
 const eyeLogo = '/eye-logo.jpg';
@@ -47,6 +47,10 @@ export function ChatScreen() {
       if (chatMode === 'deepsearch') {
         setDeepSearchStatus('Eye AI is thinking...');
         result = await deepSearch(text, history);
+        setDeepSearchStatus('');
+      } else if (chatMode === 'websearch') {
+        setDeepSearchStatus('Searching the web...');
+        result = await webSearch(text, history);
         setDeepSearchStatus('');
       } else {
         result = await callAIWithFallback(text, history);
