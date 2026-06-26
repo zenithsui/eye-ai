@@ -45,7 +45,7 @@ export function ChatScreen() {
       const history = messages.map(m => ({ role: m.role, content: m.content }));
       let result;
       if (chatMode === 'deepsearch') {
-        setDeepSearchStatus('Deep Search active — combining multiple sources...');
+        setDeepSearchStatus('Eye AI is thinking...');
         result = await deepSearch(text, history);
         setDeepSearchStatus('');
       } else {
